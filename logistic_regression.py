@@ -1,7 +1,8 @@
 import numpy as np
 import argparse
 from sklearn import model_selection
-from sklearn.naive_bayes import MultinomialNB
+from sklearn.linear_model import LogisticRegression
+from sklearn import preprocessing
 from sklearn.preprocessing import minmax_scale
 from sklearn.model_selection import cross_validate
 
@@ -25,9 +26,9 @@ X[:, label_index:] = data[:, label_index+1:]
 
 scoring = ('accuracy','precision','recall','f1')
 
-scaled_X = minmax_scale(X)
-scaled_y = minmax_scale(y)
-model = MultinomialNB()
+scaled_X = minmax_scale(X)#preprocessing.scale(X)
+scaled_y = minmax_scale(y)#preprocessing.scale(y)
+model = LogisticRegression(max_iter=150, random_state=0)
 cross_validation_accuracy = cross_validate(model, scaled_X, scaled_y, cv=10, scoring=scoring, return_train_score=True)#, retain_train_scores=True)
 
 for k in scoring:
