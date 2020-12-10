@@ -3,18 +3,17 @@ import numpy as np
 from sklearn import metrics
 from sklearn.model_selection import KFold
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import confusion_matrix
+from matplotlib.pyplot import plot, show
 
 N_CROSS_VAL = 10
+KNN_K = 101
 
 arg_parser = argparse.ArgumentParser()
 # arg_parser.add_argument("--dataset", type=str, default='data/processed_data.csv')
 arg_parser.add_argument("--dataset", type=str, default='april_processed_final_grouped.csv')
-arg_parser.add_argument("-k", type=int, default=20)
 args = arg_parser.parse_args()
 
 filename = args.dataset
-knn_k = args.k
 data = np.genfromtxt(filename, delimiter=",", skip_header=1)
 
 num_samples = data.shape[0]
@@ -28,20 +27,22 @@ X = np.zeros((num_samples, num_features))
 X[:, 0:label_index] = data[:, 0:label_index]
 X[:, label_index:] = data[:, label_index + 1:]
 
-knn = KNeighborsClassifier(n_neighbors=knn_k)
 kf = KFold(n_splits=N_CROSS_VAL, shuffle=True)
 
-accuracy = np.array([])
-for train_index, test_index in kf.split(X):
-    X_train, X_test = X[train_index], X[test_index]
-    y_train, y_test = y[train_index], y[test_index]
-    knn.fit(X_train, y_train)
-    y_pred = knn.predict(X_test)
-    acc = metrics.accuracy_score(y_test, y_pred)
-    accuracy = np.append(accuracy, [acc])
-    # print(acc)
-    # print(confusion_matrix(y_test, y_pred))
-    # print()
+accuracies = np.array([])
+for k in range(1, KNN_K):
+    knn = KNeighborsClassifier(n_neighbors=k)
+    accuracy = np.array([])
+    for train_index, test_index in kf.split(X):
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+        knn.fit(X_train, y_train)
+        y_pred = knn.predict(X_test)
+        acc = metrics.accuracy_score(y_test, y_pred)
+        accuracy = np.append(accuracy, [acc])
+    print("K = " + str(k) + ", Accuracy:" + str(accuracy.mean()))
+    accuracies = np.append(accuracies, [accuracy.mean()])
 
-print(accuracy)
-print("Accuracy = " + str(accuracy.mean()))
+print("Max Accuracy K value is " + str(np.argmax(accuracies)) + ", Accuracy = " + str(accuracies.max()))
+plot(list(range(1, KNN_K)), list(accuracies))
+show()
