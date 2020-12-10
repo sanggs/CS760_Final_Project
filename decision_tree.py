@@ -1,6 +1,6 @@
 import argparse
 import numpy as np
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import minmax_scale
 from sklearn.model_selection import cross_validate
 
@@ -25,7 +25,7 @@ X = np.zeros((num_samples, num_features))
 X[:, 0:label_index] = data[:, 0:label_index]
 X[:, label_index:] = data[:, label_index + 1:]
 
-model = KNeighborsClassifier(n_neighbors=knn_k)
+model = DecisionTreeClassifier(criterion="entropy", max_depth=3)
 scoring = ('accuracy', 'precision', 'recall', 'f1')
 scaled_y = minmax_scale(y)
 cross_validation_accuracy = cross_validate(model, X, scaled_y, cv=10, scoring=scoring, return_train_score=True)
