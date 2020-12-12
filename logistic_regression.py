@@ -6,34 +6,35 @@ from sklearn import preprocessing
 from sklearn.preprocessing import minmax_scale
 from sklearn.model_selection import cross_validate
 
+from utils import *
+
 arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument("--dataset", type=str, default='data/processed_data.csv')
+arg_parser.add_argument("--dataset", action='append', default=[])
+arg_parser.add_argument("--test", type=str, default='data/june_processed_data.csv')
 args = arg_parser.parse_args()
 
-filename = args.dataset
-data = np.genfromtxt(filename, delimiter=",", skip_header=1)
+filename_list = args.dataset
+test_file = args.test
 
-num_samples = data.shape[0]
-num_features = data.shape[1]-1
-print("Number of features: {} \nNumber of samples: {}".format(num_features, num_samples))
+# Default value when no command line args passed
+if not filename_list:
+    filename_list = ['data/april_processed_data.csv', 'data/may_processed_data.csv']
 
-# label is the 19th column in the dataset
-label_index = 19
-y = data[:, label_index]
-X = np.zeros((num_samples, num_features))
-X[:, 0:label_index] = data[:, 0:label_index]
-X[:, label_index:] = data[:, label_index+1:]
+X, y = get_dataset(filename_list)
 
 scoring = ('accuracy','precision','recall','f1')
 
-scaled_X = minmax_scale(X)#preprocessing.scale(X)
-scaled_y = minmax_scale(y)#preprocessing.scale(y)
+scaled_X = minmax_scale(X)
+scaled_y = minmax_scale(y)
 model = LogisticRegression(max_iter=150, random_state=0)
-cross_validation_accuracy = cross_validate(model, scaled_X, scaled_y, cv=10, scoring=scoring, return_train_score=True)#, retain_train_scores=True)
+cross_validation_accuracy = cross_validate(model, scaled_X, scaled_y, cv=10, scoring=scoring, return_train_score=True)
+print_cross_validataion(cross_validation_accuracy, scoring)
 
-for k in scoring:
-	key = 'train_'+k
-	print("%s: %f (+/- %f)" % (key, cross_validation_accuracy[key].mean(), cross_validation_accuracy[key].std() * 2))	
-	key = 'test_'+k
-	print("%s: %f (+/- %f)" % (key, cross_validation_accuracy[key].mean(), cross_validation_accuracy[key].std() * 2))
-	
+X_test, y_test = get_test_data(test_file)
+
+model.fit(scaled_X, scaled_y)
+X_test_scaled = minmax_scale(X_test)
+y_test_scaled = minmax_scale(y_test)
+y_pred = model.predict(X_test_scaled)
+print_test_scores(y_test_scaled, y_pred)
+
