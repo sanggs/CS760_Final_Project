@@ -1,5 +1,5 @@
 import argparse
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import minmax_scale
 from sklearn.model_selection import cross_validate
 
@@ -21,7 +21,7 @@ if not filename_list:
 
 X, y = get_dataset(filename_list)
 
-model = KNeighborsClassifier(n_neighbors=knn_k)
+model = RandomForestClassifier(criterion="entropy")
 scoring = ('accuracy', 'precision', 'recall', 'f1')
 scaled_y = minmax_scale(y)
 cross_validation_accuracy = cross_validate(model, X, scaled_y, cv=10, scoring=scoring, return_train_score=True)
