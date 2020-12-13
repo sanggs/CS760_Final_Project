@@ -44,6 +44,7 @@ if not filename_list:
 X, y = get_dataset(filename_list)
 
 num_features = X.shape[1]
+
 scaled_X = torch.tensor(minmax_scale(X), dtype=torch.float32)
 scaled_y = torch.tensor(minmax_scale(y), dtype=torch.float32)
 
@@ -105,16 +106,41 @@ def get_predictions_from_model_output(model_output):
 	model_prediction = torch.where(model_output >= 0.5, ones, zeros)
 	return model_prediction
 
+def print_metrics(true_label, model_prediction):
+	from sklearn import metrics
+	accuracy = float(torch.sum(true_label == model_prediction.view(-1)).item())/float(true_label.shape[0])
+	print("Accuracy: %f" % accuracy)
+	print("Precision: %f" % metrics.precision_score(true_label.view(-1).numpy(), model_prediction.view(-1).numpy()))
+	print("Recall: %f" % metrics.recall_score(true_label.view(-1).numpy(), model_prediction.view(-1).numpy()))
+	print("F1 score: %f" % metrics.f1_score(true_label.view(-1).numpy(), model_prediction.view(-1).numpy()))
+
 model.eval()
+
+print("Getting metrics for training data")
+model_input = scaled_X
+model_output = model(model_input)
+model_prediction = get_predictions_from_model_output(model_output)
+
+true_label = scaled_y
+
+target_names = ['presence of mental health condition', 'absence of mental health condtion']
+report = classification_report(true_label.view(-1).numpy(), model_prediction.view(-1).numpy(), target_names=target_names)
+
+print_metrics(true_label, model_prediction)
+
+print("-----------Classification report of the FullyConnected Neural Network using Training data-------------")
+print(report)
+
+print("Getting metrics for testing data")
 model_input = X_test_scaled
 model_output = model(model_input)
 model_prediction = get_predictions_from_model_output(model_output)
 
 true_label = y_test_scaled
-accuracy = float(torch.sum(true_label == model_prediction.view(-1)).item())/float(true_label.shape[0])
 
 target_names = ['presence of mental health condition', 'absence of mental health condtion']
 report = classification_report(true_label.view(-1).numpy(), model_prediction.view(-1).numpy(), target_names=target_names)
 
-print("-----------Classification report of the FullyConnected Neural Network-------------")
+print_metrics(true_label, model_prediction)
+print("-----------Classification report of the FullyConnected Neural Network using Testing data-------------")
 print(report)
