@@ -6,7 +6,6 @@ from sklearn.model_selection import cross_validate
 from utils import *
 
 arg_parser = argparse.ArgumentParser()
-arg_parser.add_argument("-k", type=int, default=20)
 arg_parser.add_argument("--dataset", action='append', default=[])
 arg_parser.add_argument("--test", type=str, default='data/june_processed_data.csv')
 args = arg_parser.parse_args()

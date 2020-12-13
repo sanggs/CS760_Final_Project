@@ -1,4 +1,4 @@
-# CS760_Final_Project
+# CS760 Final Project
 Authors: Sangeetha Grama Srinivasan, Vinith Venkatesan
 
 In this project, we aim to implement classifiers that identify if an individual has a mental health condition or not, based on the information about the individual obtained from a survey related to COVID-19. The processed dataset has been put under **data/** folder
