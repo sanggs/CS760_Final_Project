@@ -26,11 +26,11 @@ You can use this general command to run every script. Replace <script_name> with
 ```
 python <script_name>.py --dataset <file1> --dataset <file2> --test <test_file>
 ```
-Example: To run neural_net.py, use 
+Example: To run decision_tree.py, use 
 ```
-python neural_net.py --dataset data/april_processed_data.csv --dataset data/may_processed_data.csv --test data/june_processed_data.csv
+python decision_tree.py --dataset data/april_processed_data.csv --dataset data/may_processed_data.csv --test data/june_processed_data.csv
 ```
-NOTE: The --test argument is not used for running knn_best_k.py. To see additional parameters
+NOTE: The --test argument is not used for running knn_best_k.py. To see commands to run each script, please see the section below.
 
 ### 3. Commands for every script with all the options is given below
 - knn.py
@@ -67,6 +67,6 @@ python svm.py --dataset data/april_processed_data.csv --dataset data/may_process
 ```
 python neural_net.py --save-model --batch-size 150 --epochs 150 --dataset data/april_processed_data.csv --dataset data/may_processed_data.csv --test data/june_processed_data.csv
 ```
- --save-model is to save the trained neural network to a file.
- --batch-size sets the batch size for training the neural network
- --epochs sets the number of epochs to train the neural network
+ --save-model is to save the trained neural network to a file,
+ --batch-size sets the batch size for training the neural network,
+ --epochs sets the number of epochs to train the neural network.
